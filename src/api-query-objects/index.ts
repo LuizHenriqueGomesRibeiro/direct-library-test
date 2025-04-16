@@ -21,21 +21,22 @@ const api = {
         authenticated: false,
         method: 'post',
         ARGS_PROPS: {} as PostLoginParamsProps,
-        DATA_PROPS: {} as PostLoginResponse
+        DATA_PROPS: {} as PostLoginResponse,
+        redirect_url: '/pagina-central'
     },
     getPatrimonyAndPaymentsParams: {
         url: `${API_BASE_URL}/patrimonio-e-pagamento`,
         authenticated: true,
         method: 'get',
         ARGS_PROPS: {} as string,
-        DATA_PROPS: {} as PatrimonyAndPaymentParamProps
+        DATA_PROPS: {} as PatrimonyAndPaymentParamProps,
     },
     getPatrimonyAndPaymentsCalculate: {
         url: `${API_BASE_URL}/stocks/list`,
         authenticated: true,
         method: 'get',
         ARGS_PROPS: {} as PatrimonyAndPaymentParamProps,
-        DATA_PROPS: {} as PatrimonyAndPaymentDataProps
+        DATA_PROPS: {} as PatrimonyAndPaymentDataProps,
     }
 } as const satisfies Record<string, ApiEndpoint>;
 
