@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
-import { clientQueriesObject } from "@/api-query-objects";
+import { BreedHoundImagesDataProps, clientQueriesObject, serverQueriesObject } from "@/api-query-objects";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,13 +12,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export default function Home() {
-  const { makeRequest, data } = clientQueriesObject.login();
-  console.log('data: ', data);
+export const getServerSideProps = async () => {
+  const response = await serverQueriesObject.breed_hound_images();
+
+  return {
+    props: {
+      list: response
+    }
+  }
+}
+
+interface HomePageProps {
+  list: BreedHoundImagesDataProps
+}
+
+export default function Home({ list }: HomePageProps) {
+  const { makeRequest, data } = clientQueriesObject.breed_image();
+  console.log('list: ', list);
+
   return (
     <div
       className={`${geistSans.className} ${geistMono.className} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
     >
+      {list && list.message.map(element => <div>
+        <img src={element} alt="" width={20} height={20} />
+      </div>)}
       <button className="bg-red-500 rounded-2xl px-2 cursor-pointer" onClick={() => makeRequest({
         email: 'luis1234',
         password: 'luis1234'

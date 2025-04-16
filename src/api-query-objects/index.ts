@@ -10,6 +10,11 @@ export interface BreedHoundImagesDataProps {
 }
 
 const api = {
+    breed_image: {
+        url: 'https://dog.ceo/api/breeds/image/random',
+        authenticated: false,
+        method: 'get'
+    },
     breed_hound_images: {
         url: `${EXTERNAL_DOG_API_BASE_URL}/breed/hound/images`,
         authenticated: false,
