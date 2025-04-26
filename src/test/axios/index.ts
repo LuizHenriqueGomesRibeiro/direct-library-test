@@ -12,8 +12,14 @@ export const createConfiguredAxiosInstance = (options: any) => {
 
     axiosInstance.interceptors.request.use(
         (config: AxiosRequestConfig) => {
-            const userConfig = options.axiosGssp(config);
-            return userConfig;
+            const axiosGssp = options.axiosGssp;
+
+            if (axiosGssp) {
+                const userConfig = axiosGssp(config);
+                return userConfig;
+            }
+
+            return config;
         }, 
         (error) => {
             return Promise.reject(error);
