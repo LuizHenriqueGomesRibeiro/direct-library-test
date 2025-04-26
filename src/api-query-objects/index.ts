@@ -1,6 +1,6 @@
 import { ApiEndpoint, createClientNextArchitecture, createServerNextArchitecture } from "@/test";
 import { PatrimonyAndPaymentDataProps, PatrimonyAndPaymentParamProps, PostLoginParamsProps, PostLoginResponse } from "./types";
-import { useRouter } from "next/router";
+import axiosGssp from "./axios";
 
 const API_BASE_URL = 'http://localhost:3000';
 const EXTERNAL_DOG_API_BASE_URL = 'https://dog.ceo/api';
@@ -53,7 +53,7 @@ const api = {
     }
 } as const satisfies Record<string, ApiEndpoint>;
 
-const serverQueriesObject = createServerNextArchitecture(api);
+const serverQueriesObject = createServerNextArchitecture(api, axiosGssp);
 const clientQueriesObject = createClientNextArchitecture(serverQueriesObject, api);
 
 export {

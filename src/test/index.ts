@@ -13,7 +13,7 @@ export interface ApiEndpoint<ArgsProps = unknown, DataProps = unknown> {
     readonly redirector?: string;
 }
 
-function createApiClass<T extends ApiConfig>(list: T) {
+function createApiClass<T extends ApiConfig>(list: T, axiosGssp: any) {
     return class Api {
         constructor() {
             Object.keys(list).forEach((key) => {
@@ -24,7 +24,7 @@ function createApiClass<T extends ApiConfig>(list: T) {
         }
     
         async request(method: MethodProps, url: string, authenticated?: boolean, redirector?: string, params?: any): Promise<any> {
-            const client = authenticated ? http.privateClient() : http.publicClient();
+            const client = authenticated ? http.privateClient(axiosGssp) : http.publicClient(axiosGssp);
             const response = await client[method](url, { params });
             return response.data;
         }
@@ -46,8 +46,8 @@ function createPrimitiveClient<T extends ServerApiMethods<any>, K extends ApiCon
     return PrimitiveClient as new () => { [K in keyof T]: () => any };
 }
 
-function createServerNextArchitecture<T extends ApiConfig>(list: T) {
-    const PrimitiveServer = createApiClass(list);
+function createServerNextArchitecture<T extends ApiConfig>(list: T, axiosGssp: any) {
+    const PrimitiveServer = createApiClass(list, axiosGssp);
     //@ts-ignore
     const server: ServerApiMethods<typeof list> = new PrimitiveServer();
     return server;
