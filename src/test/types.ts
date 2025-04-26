@@ -4,7 +4,7 @@ export type MethodProps = 'get' | 'post' | 'put' | 'delete';
 export interface UseServiceCallProps {
     fn: any,
     config?: {
-        redirect_url?: string
+        redirector?: string
     }
 }
 
@@ -16,7 +16,7 @@ export type ApiConfig = {
         ARGS_PROPS?: unknown;
         DATA_PROPS?: unknown;
         ERROR_PROPS?: unknown;
-        redirect_url?: string;
+        redirector?: string;
     };
 };
 

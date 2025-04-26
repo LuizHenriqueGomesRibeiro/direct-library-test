@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter } from "next/router";
+
 import { UseServiceCallProps, UseServiceCallStatusProps } from "../types";
 import { useState } from "react";
 
@@ -10,9 +10,8 @@ const useServiceCall = ({ fn, config }: UseServiceCallProps) => {
     const [error, setError] = useState(null);
     const [data, setData] = useState(null);
 
-    const router = useRouter();
 
-    const redirect_url = config?.redirect_url;
+    const redirector = config?.redirector;
 
     const makeRequest = async (...args: any) => {
         setStatus('loading');
@@ -23,8 +22,8 @@ const useServiceCall = ({ fn, config }: UseServiceCallProps) => {
             setData(response);
             setStatus("loaded");
             
-            if (redirect_url) {
-                router.push(redirect_url);
+            if (redirector) {
+                window.location.href = redirector;
             }
         } catch (err: any) {
             setStatus("error");

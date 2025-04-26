@@ -10,7 +10,7 @@ export interface ApiEndpoint<ArgsProps = unknown, DataProps = unknown> {
     readonly authenticated: boolean;
     readonly ARGS_PROPS?: ArgsProps;
     readonly DATA_PROPS?: DataProps;
-    readonly redirect_url?: string;
+    readonly redirector?: string;
 }
 
 function createApiClass<T extends ApiConfig>(list: T) {
@@ -18,12 +18,12 @@ function createApiClass<T extends ApiConfig>(list: T) {
         constructor() {
             Object.keys(list).forEach((key) => {
                 (this as any)[key] = async (params?: any) => {
-                    return this.request(list[key].method, list[key].url, list[key].authenticated, list[key].redirect_url, params);
+                    return this.request(list[key].method, list[key].url, list[key].authenticated, list[key].redirector, params);
                 };
             });
         }
     
-        async request(method: MethodProps, url: string, authenticated?: boolean, redirect_url?: string, params?: any): Promise<any> {
+        async request(method: MethodProps, url: string, authenticated?: boolean, redirector?: string, params?: any): Promise<any> {
             const client = authenticated ? http.privateClient() : http.publicClient();
             const response = await client[method](url, { params });
             return response.data;
@@ -35,9 +35,9 @@ function createPrimitiveClient<T extends ServerApiMethods<any>, K extends ApiCon
     class PrimitiveClient {
         constructor() {
             Object.keys(serverApi).forEach((key) => {
-                const redirect_url = list[key as keyof K]?.redirect_url;
+                const redirector = list[key as keyof K]?.redirector;
                 (this as any)[key] = () => {
-                    return useServiceCall({ fn: serverApi[key as keyof T], config: { redirect_url } }) as ApiClientResourcesProps; 
+                    return useServiceCall({ fn: serverApi[key as keyof T], config: { redirector } }) as ApiClientResourcesProps; 
                 };
             });
         }

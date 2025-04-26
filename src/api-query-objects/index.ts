@@ -1,5 +1,6 @@
 import { ApiEndpoint, createClientNextArchitecture, createServerNextArchitecture } from "@/test";
 import { PatrimonyAndPaymentDataProps, PatrimonyAndPaymentParamProps, PostLoginParamsProps, PostLoginResponse } from "./types";
+import { useRouter } from "next/router";
 
 const API_BASE_URL = 'http://localhost:3000';
 const EXTERNAL_DOG_API_BASE_URL = 'https://dog.ceo/api';
@@ -10,10 +11,16 @@ export interface BreedHoundImagesDataProps {
 }
 
 const api = {
+    list: {
+        url: 'http://localhost:3000/patrimonio-e-pagamento/all',
+        authenticated: false,
+        method: 'get'
+    },
     breed_image: {
         url: 'https://dog.ceo/api/breeds/image/random',
         authenticated: false,
-        method: 'get'
+        method: 'get',
+        redirector: '/redirected'
     },
     breed_hound_images: {
         url: `${EXTERNAL_DOG_API_BASE_URL}/breed/hound/images`,
@@ -27,7 +34,7 @@ const api = {
         method: 'post',
         ARGS_PROPS: {} as PostLoginParamsProps,
         DATA_PROPS: {} as PostLoginResponse,
-        redirect_url: '/pagina-central'
+        redirector: '/pagina-central'
     },
     getPatrimonyAndPaymentsParams: {
         url: `${API_BASE_URL}/patrimonio-e-pagamento`,
@@ -42,6 +49,7 @@ const api = {
         method: 'get',
         ARGS_PROPS: {} as PatrimonyAndPaymentParamProps,
         DATA_PROPS: {} as PatrimonyAndPaymentDataProps,
+        redirector: '/redirected'
     }
 } as const satisfies Record<string, ApiEndpoint>;
 
