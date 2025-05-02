@@ -3,15 +3,15 @@ import { NextRouter } from "next/router";
 export type UseServiceCallStatusProps = 'idle' | 'loading' | 'loaded' | 'error';
 export type MethodProps = 'get' | 'post' | 'put' | 'delete';
 
-export interface ClientSideRequestProps {
+export interface ClientSideRequestProps<T> {
     readonly disabledClientSideRequest?: boolean,
-    readonly onSuccess?: ({ data, router } : { data: any | undefined, router?: NextRouter }) => void,
+    readonly onSuccess?: ({ data, router } : { data: T | undefined, router?: NextRouter }) => void,
     readonly onError?: () => void
 }
 
-export interface UseServiceCallProps {
+export interface UseServiceCallProps<T> {
     fn: any,
-    resources?: ClientSideRequestProps
+    resources?: ClientSideRequestProps<T>,
 }
 
 export type ApiConfig = {
@@ -24,11 +24,7 @@ export type ApiConfig = {
         serverSideResources?: {
             disabledServerSideRequest?: boolean
         };
-        clientSideResources?: {
-            disabledClientSideRequest?: boolean,
-            onSuccess?: (data: any) => void,
-            onError?: () => void
-        };
+        clientSideResources?: ClientSideRequestProps<any>;
     };
 };
 
@@ -50,10 +46,4 @@ export type ClientApiMethods<T extends ApiConfig> = {
 
 export interface ServerSideProps {
     disabledServerSideRequest?: boolean
-}
-
-export interface ClientSideProps {
-    disabledClientSideRequest?: boolean,
-    onSuccess?: (data: any) => void,
-    onError?: () => void
 }

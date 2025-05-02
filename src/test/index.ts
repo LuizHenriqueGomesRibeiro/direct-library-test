@@ -42,8 +42,9 @@ function createPrimitiveClient<T extends ServerApiMethods<any>, K extends ApiCon
         constructor() {
             Object.keys(serverApi).forEach((key) => {
                 const resources = list[key as keyof K]?.clientSideResources;
+                const config = list[key as keyof K];
                 (this as any)[key] = () => {
-                    return useServiceCall({ fn: serverApi[key as keyof T], resources }) as ApiClientResourcesProps; 
+                    return useServiceCall<typeof config.DATA_PROPS>({ fn: serverApi[key as keyof T], resources }) as ApiClientResourcesProps; 
                 };
             });
         }

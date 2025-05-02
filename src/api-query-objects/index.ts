@@ -27,8 +27,8 @@ const api = {
         DATA_PROPS: {} as BreedImageDataProps,
         clientSideResources: {
             onSuccess: ({ data, router }) => {
-                router?.push('/redirect');
-                console.log('request was a success. Data: ', data);
+                
+                // router?.push('/redirected'); 
             }
         }
     },
