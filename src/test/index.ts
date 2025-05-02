@@ -1,5 +1,6 @@
 import { ApiConfig, ClientApiMethods, MethodProps, ServerApiMethods } from "./types";
 import { ApiClientResourcesProps } from "./types";
+import { NextRouter } from "next/router";
 
 import useServiceCall from "./useServiceCall";
 import http from "./http";
@@ -14,7 +15,7 @@ export interface ApiEndpoint<ArgsProps = unknown, DataProps = unknown> {
     };
     readonly clientSideResources?: {
         readonly disabledClientSideRequest?: boolean,
-        readonly onSuccess?: (data: any) => void,
+        readonly onSuccess?: ({ data, router } : { data: DataProps, router?: NextRouter }) => void,
         readonly onError?: () => void
     };
 }
@@ -40,9 +41,9 @@ function createPrimitiveClient<T extends ServerApiMethods<any>, K extends ApiCon
     class PrimitiveClient {
         constructor() {
             Object.keys(serverApi).forEach((key) => {
-                const redirector = list[key as keyof K]?.clientSideResources;
+                const resources = list[key as keyof K]?.clientSideResources;
                 (this as any)[key] = () => {
-                    return useServiceCall({ fn: serverApi[key as keyof T] }) as ApiClientResourcesProps; 
+                    return useServiceCall({ fn: serverApi[key as keyof T], resources }) as ApiClientResourcesProps; 
                 };
             });
         }

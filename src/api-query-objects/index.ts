@@ -2,7 +2,6 @@ import { PatrimonyAndPaymentDataProps, PatrimonyAndPaymentParamProps, PostLoginP
 import { ApiEndpoint, createClientNextArchitecture, createServerNextArchitecture } from "@/test";
 
 import axiosGssp from "./axios";
-import { useRouter } from "next/router";
 
 const API_BASE_URL = 'http://localhost:3000';
 const EXTERNAL_DOG_API_BASE_URL = 'https://dog.ceo/api';
@@ -12,7 +11,10 @@ export interface BreedHoundImagesDataProps {
     status: string;
 }
 
-const router = useRouter();
+interface BreedImageDataProps {
+    message: string,
+    status: string,
+}
 
 const api = {
     list: {
@@ -22,6 +24,13 @@ const api = {
     breed_image: {
         url: EXTERNAL_DOG_API_BASE_URL + '/breeds/image/random',
         method: 'get',
+        DATA_PROPS: {} as BreedImageDataProps,
+        clientSideResources: {
+            onSuccess: ({ data, router }) => {
+                router?.push('/redirect');
+                console.log('request was a success. Data: ', data);
+            }
+        }
     },
     breed_hound_images: {
         url: EXTERNAL_DOG_API_BASE_URL + '/breed/hound/images',
@@ -45,19 +54,6 @@ const api = {
         method: 'get',
         ARGS_PROPS: {} as PatrimonyAndPaymentParamProps,
         DATA_PROPS: {} as PatrimonyAndPaymentDataProps,
-        serverSideResources: {
-            disabledServerSideRequest: true,
-        },
-        clientSideResources: {
-            onSuccess: (data: PatrimonyAndPaymentDataProps) => {
-                const push = () => {
-                    router.push('/redirected/', data.stocks[0].url);
-                }
-
-                push();
-            },
-            disabledClientSideRequest: false,
-        }
     }
 } as const satisfies Record<string, ApiEndpoint>;
 

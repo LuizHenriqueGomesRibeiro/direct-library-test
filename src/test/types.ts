@@ -1,8 +1,17 @@
+import { NextRouter } from "next/router";
+
 export type UseServiceCallStatusProps = 'idle' | 'loading' | 'loaded' | 'error';
 export type MethodProps = 'get' | 'post' | 'put' | 'delete';
 
+export interface ClientSideRequestProps {
+    readonly disabledClientSideRequest?: boolean,
+    readonly onSuccess?: ({ data, router } : { data: any | undefined, router?: NextRouter }) => void,
+    readonly onError?: () => void
+}
+
 export interface UseServiceCallProps {
     fn: any,
+    resources?: ClientSideRequestProps
 }
 
 export type ApiConfig = {
