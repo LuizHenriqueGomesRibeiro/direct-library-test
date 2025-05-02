@@ -7,10 +7,16 @@ import http from "./http";
 export interface ApiEndpoint<ArgsProps = unknown, DataProps = unknown> {
     readonly url: string;
     readonly method: MethodProps;
-    readonly authenticated: boolean;
     readonly ARGS_PROPS?: ArgsProps;
     readonly DATA_PROPS?: DataProps;
-    readonly redirector?: string;
+    readonly serverSideResources?: {
+        readonly disabledServerSideRequest?: boolean
+    };
+    readonly clientSideResources?: {
+        readonly disabledClientSideRequest?: boolean,
+        readonly onSuccess?: (data: any) => void,
+        readonly onError?: () => void
+    };
 }
 
 function createApiClass<T extends ApiConfig>(list: T, axiosGssp: any) {
@@ -18,14 +24,13 @@ function createApiClass<T extends ApiConfig>(list: T, axiosGssp: any) {
         constructor() {
             Object.keys(list).forEach((key) => {
                 (this as any)[key] = async (params?: any) => {
-                    return this.request(list[key].method, list[key].url, list[key].authenticated, params);
+                    return this.request(list[key].method, list[key].url, params);
                 };
             });
         }
     
-        async request(method: MethodProps, url: string, authenticated?: boolean, params?: any): Promise<any> {
-            const client = authenticated ? http.privateClient(axiosGssp) : http.publicClient(axiosGssp);
-            const response = await client[method](url, { params });
+        async request(method: MethodProps, url: string, params?: any): Promise<any> {
+            const response = await http.privateClient(axiosGssp)[method](url, { params });
             return response.data;
         }
     };
@@ -35,9 +40,9 @@ function createPrimitiveClient<T extends ServerApiMethods<any>, K extends ApiCon
     class PrimitiveClient {
         constructor() {
             Object.keys(serverApi).forEach((key) => {
-                const redirector = list[key as keyof K]?.redirector;
+                const redirector = list[key as keyof K]?.clientSideResources;
                 (this as any)[key] = () => {
-                    return useServiceCall({ fn: serverApi[key as keyof T], config: { redirector } }) as ApiClientResourcesProps; 
+                    return useServiceCall({ fn: serverApi[key as keyof T] }) as ApiClientResourcesProps; 
                 };
             });
         }
