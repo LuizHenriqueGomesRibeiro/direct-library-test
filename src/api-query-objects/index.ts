@@ -26,10 +26,12 @@ const api = {
         method: 'get',
         DATA_PROPS: {} as BreedImageDataProps,
         clientSideResources: {
-            onSuccess: ({ data, router }) => {
+            onSuccess({ data, router }) {
                 
-                // router?.push('/redirected'); 
-            }
+            },
+            onError({ error, router }) {
+                
+            },
         }
     },
     breed_hound_images: {

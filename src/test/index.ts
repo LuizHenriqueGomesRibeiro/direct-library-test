@@ -1,6 +1,5 @@
-import { ApiConfig, ClientApiMethods, MethodProps, ServerApiMethods } from "./types";
+import { ApiConfig, ClientApiMethods, ClientSideRequestProps, MethodProps, ServerApiMethods } from "./types";
 import { ApiClientResourcesProps } from "./types";
-import { NextRouter } from "next/router";
 
 import useServiceCall from "./useServiceCall";
 import http from "./http";
@@ -13,11 +12,7 @@ export interface ApiEndpoint<ArgsProps = unknown, DataProps = unknown> {
     readonly serverSideResources?: {
         readonly disabledServerSideRequest?: boolean
     };
-    readonly clientSideResources?: {
-        readonly disabledClientSideRequest?: boolean,
-        readonly onSuccess?: ({ data, router } : { data: DataProps, router?: NextRouter }) => void,
-        readonly onError?: () => void
-    };
+    readonly clientSideResources?: ClientSideRequestProps;
 }
 
 function createApiClass<T extends ApiConfig>(list: T, axiosGssp: any) {
@@ -42,9 +37,8 @@ function createPrimitiveClient<T extends ServerApiMethods<any>, K extends ApiCon
         constructor() {
             Object.keys(serverApi).forEach((key) => {
                 const resources = list[key as keyof K]?.clientSideResources;
-                const config = list[key as keyof K];
                 (this as any)[key] = () => {
-                    return useServiceCall<typeof config.DATA_PROPS>({ fn: serverApi[key as keyof T], resources }) as ApiClientResourcesProps; 
+                    return useServiceCall({ fn: serverApi[key as keyof T], resources }) as ApiClientResourcesProps; 
                 };
             });
         }

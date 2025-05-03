@@ -4,14 +4,15 @@ import { UseServiceCallProps, UseServiceCallStatusProps } from "../types";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-const useServiceCall = <DataProps,>({ fn, resources }: UseServiceCallProps<DataProps>) => {
+const useServiceCall = ({ fn, resources }: UseServiceCallProps) => {
+    const onSuccess = resources?.onSuccess;
+    const onError = resources?.onError;
+    const router = useRouter();
+    
     const [status, setStatus] = useState<UseServiceCallStatusProps>('idle');
-    const [args, setArgs] = useState(null);
     const [error, setError] = useState(null);
     const [data, setData] = useState(null);
-
-    const router = useRouter();
-    const onSuccess = resources?.onSuccess;
+    const [args, setArgs] = useState(null);
 
     const makeRequest = async (...args: any) => {
         setStatus('loading');
@@ -25,13 +26,23 @@ const useServiceCall = <DataProps,>({ fn, resources }: UseServiceCallProps<DataP
             if (onSuccess) {
                 onSuccess({ data: response, router });
             }
-        } catch (err: any) {
+        } catch (error: any) {
             setStatus("error");
-            setError(err);
+            setError(error);
+
+            if (onError) {
+                onError({ error, router });
+            }
         }
     }
 
-    return { data, status, error, args, makeRequest };
+    return { 
+        data, 
+        status, 
+        error, 
+        args, 
+        makeRequest 
+    };
 }
 
 export default useServiceCall;
