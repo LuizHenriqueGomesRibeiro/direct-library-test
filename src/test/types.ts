@@ -1,4 +1,7 @@
+import { AxiosRequestConfig } from "axios";
 import { NextRouter } from "next/router";
+
+export type AxiosGsspProps = (config: AxiosRequestConfig) => AxiosRequestConfig;
 
 export type UseServiceCallStatusProps = 'idle' | 'loading' | 'loaded' | 'error';
 export type MethodProps = 'get' | 'post' | 'put' | 'delete';
@@ -22,7 +25,7 @@ export type ApiConfig = {
         DATA_PROPS?: unknown;
         ERROR_PROPS?: unknown;
         serverSideResources?: {
-            disabledServerSideRequest?: boolean
+            disabledServerSideRequest?: boolean;
         };
         clientSideResources?: ClientSideRequestProps;
     };
