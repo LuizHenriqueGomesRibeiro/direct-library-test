@@ -1,8 +1,7 @@
 import { PatrimonyAndPaymentDataProps, PatrimonyAndPaymentParamProps, PostLoginParamsProps, PostLoginResponse } from "./types";
-import { ApiEndpoint, createClientNextArchitecture, createServerNextArchitecture, filterServerSideEndpoints } from "@/test";
+import { ApiEndpoint, createClientNextArchitecture, createServerNextArchitecture } from "@/test";
 
 import axiosGssp from "./axios";
-import { ApiConfig } from "@/test/types";
 
 const API_BASE_URL = 'http://localhost:3000';
 const EXTERNAL_DOG_API_BASE_URL = 'https://dog.ceo/api';
@@ -18,10 +17,10 @@ interface BreedImageDataProps {
 }
 
 const api = {
-    // list: {
-    //     url: API_BASE_URL + '/patrimonio-e-pagamento/all',
-    //     method: 'get'
-    // },
+    list: {
+        url: API_BASE_URL + '/patrimonio-e-pagamento/all',
+        method: 'get'
+    },
     breed_image: {
         url: EXTERNAL_DOG_API_BASE_URL + '/breeds/image/random',
         method: 'get',
@@ -47,39 +46,32 @@ const api = {
             disabledClientSideRequest: true
         }
     },
-    // login: {
-    //     url: API_BASE_URL + '/auth/login',
-    //     method: 'post',
-    //     ARGS_PROPS: {} as PostLoginParamsProps,
-    //     DATA_PROPS: {} as PostLoginResponse,
-    //     serverSideResources: {
-    //         disabledServerSideRequest: true,
-    //     }
-    // },
-    // getPatrimonyAndPaymentsParams: {
-    //     url: API_BASE_URL + '/patrimonio-e-pagamento',
-    //     method: 'get',
-    //     ARGS_PROPS: {} as string,
-    //     DATA_PROPS: {} as PatrimonyAndPaymentParamProps,
-    // },
-    // getPatrimonyAndPaymentsCalculate: {
-    //     url: API_BASE_URL + '/stocks/list',
-    //     method: 'get',
-    //     ARGS_PROPS: {} as PatrimonyAndPaymentParamProps,
-    //     DATA_PROPS: {} as PatrimonyAndPaymentDataProps,
-    // }
+    login: {
+        url: API_BASE_URL + '/auth/login',
+        method: 'post',
+        ARGS_PROPS: {} as PostLoginParamsProps,
+        DATA_PROPS: {} as PostLoginResponse,
+        serverSideResources: {
+            disabledServerSideRequest: true,
+        }
+    },
+    getPatrimonyAndPaymentsParams: {
+        url: API_BASE_URL + '/patrimonio-e-pagamento',
+        method: 'get',
+        ARGS_PROPS: {} as string,
+        DATA_PROPS: {} as PatrimonyAndPaymentParamProps,
+    },
+    getPatrimonyAndPaymentsCalculate: {
+        url: API_BASE_URL + '/stocks/list',
+        method: 'get',
+        ARGS_PROPS: {} as PatrimonyAndPaymentParamProps,
+        DATA_PROPS: {} as PatrimonyAndPaymentDataProps,
+    }
 } as const satisfies Record<string, ApiEndpoint>;
 
 const serverQueriesObject = createServerNextArchitecture(api, axiosGssp);
-
-const clientApiList = Object.fromEntries(
-    Object.entries(api).filter(([_, value]) => {
-        //@ts-ignore
-        return !('clientSideResources' in value && value.clientSideResources.disabledClientSideRequest);
-    })
-) as typeof api;
   
-const clientQueriesObject = createClientNextArchitecture(clientApiList, axiosGssp);
+const clientQueriesObject = createClientNextArchitecture(api, axiosGssp);
 
 export {
     serverQueriesObject,

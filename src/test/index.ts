@@ -101,5 +101,4 @@ function createClientNextArchitecture<K extends ApiConfig>(list: K, axiosGssp: A
 export {
     createServerNextArchitecture,
     createClientNextArchitecture,
-    filterServerSideEndpoints
 }
