@@ -30,10 +30,12 @@ const api = {
         },
         clientSideResources: {
             disabledClientSideRequest: false,
-            onSuccess({ data, router }) {
-                
+            onSuccess({ data, dispatcher }) {
+                dispatcher.push('/redirected');
+                dispatcher.data(data);
+                dispatcher.forward();
             },
-            onError({ error, router }) {
+            onError({ error }) {
                 
             },
         },
@@ -69,11 +71,12 @@ const api = {
     }
 } as const satisfies Record<string, ApiEndpoint>;
 
-const serverQueriesObject = createServerNextArchitecture(api, axiosGssp);
-  
-const clientQueriesObject = createClientNextArchitecture(api, axiosGssp);
+const server = createServerNextArchitecture(api, axiosGssp);
+const client = createClientNextArchitecture(api, axiosGssp);
 
-export {
-    serverQueriesObject,
-    clientQueriesObject,
+const caucolum = {
+    server,
+    client,
 }
+
+export default caucolum;
