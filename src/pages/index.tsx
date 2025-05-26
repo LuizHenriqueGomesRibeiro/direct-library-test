@@ -1,5 +1,5 @@
 import { BreedHoundImagesDataProps } from "@/api-query-objects/types";
-import { caucolum } from "@/api-query-objects";
+import caucolum from "@/api-query-objects";
 
 const { client, server } = caucolum;
 
