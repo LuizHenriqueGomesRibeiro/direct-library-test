@@ -54,3 +54,13 @@ export interface PatrimonyAndPaymentDataProps {
         patrimony: number
     }
 }
+
+export interface BreedHoundImagesDataProps {
+    message: string[];
+    status: string;
+}
+
+export interface BreedImageDataProps {
+    message: string,
+    status: string,
+}

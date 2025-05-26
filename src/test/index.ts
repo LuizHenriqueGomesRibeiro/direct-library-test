@@ -3,6 +3,7 @@ import { ApiClientResourcesProps } from "./types";
 
 import useServiceCall from "./useServiceCall";
 import http from "./http";
+import axios, { AxiosInstance } from "axios";
 
 export interface ApiEndpoint<ArgsProps = unknown, DataProps = unknown> {
     readonly url: string;
@@ -15,7 +16,7 @@ export interface ApiEndpoint<ArgsProps = unknown, DataProps = unknown> {
     readonly clientSideResources?: ClientSideRequestProps;
 }
 
-function createApiClass<T extends ApiConfig>(list: T, axiosGssp: AxiosGsspProps) {
+function createApiClass<T extends ApiConfig>(list: T, axiosConfig: any, axiosInstance: AxiosInstance) {
     return class Api {
         constructor() {
             Object.keys(list).forEach((key) => {
@@ -26,7 +27,7 @@ function createApiClass<T extends ApiConfig>(list: T, axiosGssp: AxiosGsspProps)
         }
         
         async request(method: MethodProps, url: string, params?: any): Promise<any> {
-            const response = await http.privateClient(axiosGssp)[method](url, { params });
+            const response = await http.client(axiosConfig, axiosInstance)[method](url, { params });
             return response.data;
         }
     };
@@ -78,27 +79,43 @@ function filterClientSideEndpoints<T extends ApiConfig>(list: T): FilteredClient
 
     return filtered as FilteredClientApi<T>;
 }
-  
-function createServerNextArchitecture<T extends ApiConfig>(list: T, axiosGssp: AxiosGsspProps) {
-    const filteredList = filterServerSideEndpoints(list);
-    const PrimitiveServer = createApiClass(filteredList, axiosGssp);
-    //@ts-ignore
-    const server: ServerApiMethods<typeof filteredList> = new PrimitiveServer();
-    return server;
+
+interface ObjectFactoryParamsProps<T> {
+    api: T,
+    axiosConfig?: AxiosGsspProps,
+    axiosInstance?: AxiosInstance
 }
 
-function createClientNextArchitecture<K extends ApiConfig>(list: K, axiosGssp: AxiosGsspProps) {
-    const filteredList = filterClientSideEndpoints(list);
-    const PrimitiveServer = createApiClass(filteredList, axiosGssp);
-    //@ts-ignore
-    const server: ServerApiMethods<typeof filteredList> = new PrimitiveServer();
-    const PrimitiveClient = createPrimitiveClient(server, filteredList);
-    const client: ClientApiMethods<typeof filteredList> = new PrimitiveClient();
+function createCaucolum<T extends ApiConfig>({ api, axiosConfig, axiosInstance }: ObjectFactoryParamsProps<T>) {
+    const serverFilteredList = filterServerSideEndpoints(api);
 
-    return client;
+    const PrimitiveServer = createApiClass(serverFilteredList, axiosConfig, axiosInstance ? axiosInstance : axios.create({
+        headers: {
+            "Content-Type": "application/json",
+        }
+    }));
+
+    //@ts-ignore
+    const server: ServerApiMethods<typeof serverFilteredList> = new PrimitiveServer();
+
+    const clientFilteredList = filterClientSideEndpoints(api);
+    const ClientPrimitiveServer = createApiClass(clientFilteredList, axiosConfig, axiosInstance ? axiosInstance : axios.create({
+        headers: {
+            "Content-Type": "application/json",
+        }
+    }));
+
+    //@ts-ignore
+    const serverClient: ServerApiMethods<typeof clientFilteredList> = new ClientPrimitiveServer();
+    const PrimitiveClient = createPrimitiveClient(serverClient, clientFilteredList);
+    const client: ClientApiMethods<typeof clientFilteredList> = new PrimitiveClient();
+
+    return {
+        server,
+        client
+    };
 }
 
 export {
-    createServerNextArchitecture,
-    createClientNextArchitecture,
+    createCaucolum
 }

@@ -1,17 +1,10 @@
 import { createConfiguredAxiosInstance } from "../axios";
-import { AxiosGsspProps } from "../types";
 import { AxiosInstance } from "axios";
 
 class Http {
-    public publicClient(gssp: AxiosGsspProps) {
+    public client(gssp: any, axiosInstance: AxiosInstance) {
         return createConfiguredAxiosInstance({
-            gssp
-        }) as AxiosInstance;
-    }
-  
-    public privateClient(gssp: AxiosGsspProps) {
-        return createConfiguredAxiosInstance({
-            gssp
+            gssp, axiosInstance
         }) as AxiosInstance;
     }
 }
